@@ -66,3 +66,79 @@ models:
         description: Sum of gross revenue across their movies
       - name: best_movie
         description: Their highest-rated movie title
+
+  - name: movies_cross_platform
+    description: >
+      Enriched view of IMDB Top 1000 movies joined with Netflix availability
+      and Wikipedia plot data. Useful for answering: "Which top-rated movies
+      are on Netflix?", "Do IMDB top movies have Wikipedia articles?",
+      or "What Netflix categories do highly-rated movies fall into?"
+    columns:
+      - name: title
+        description: Movie title (from IMDB)
+        tests:
+          - not_null
+      - name: released_year
+        description: Release year
+      - name: imdb_rating
+        description: IMDB rating (1-10)
+      - name: on_netflix
+        description: Whether this movie is available on Netflix
+      - name: has_wiki_plot
+        description: Whether this movie has a Wikipedia plot summary
+      - name: netflix_rating
+        description: Netflix content rating (PG-13, R, etc.)
+      - name: netflix_categories
+        description: Netflix categories the movie is listed under
+      - name: plot_length
+        description: Length of Wikipedia plot summary in characters
+
+  - name: directors_across_platforms
+    description: >
+      Director presence and statistics across IMDB, Netflix, and Wikipedia.
+      Useful for answering: "Which directors have movies on both IMDB top 1000 and Netflix?",
+      "Who has the longest career span?", or "Which directors are Netflix-exclusive?"
+    columns:
+      - name: director
+        description: Director name
+        tests:
+          - not_null
+      - name: imdb_top_movies
+        description: Number of movies in IMDB top 1000
+      - name: avg_imdb_rating
+        description: Average IMDB rating (null if not in IMDB top 1000)
+      - name: netflix_titles
+        description: Number of titles on Netflix
+      - name: netflix_movies
+        description: Number of movies on Netflix
+      - name: netflix_shows
+        description: Number of TV shows on Netflix
+      - name: wiki_movies
+        description: Number of movies with Wikipedia articles
+      - name: career_span_years
+        description: Years between first and last movie (from Wikipedia)
+      - name: platform_presence
+        description: Which platforms the director appears on (IMDB + Netflix, IMDB only, etc.)
+
+  - name: netflix_on_imdb
+    description: >
+      Netflix movies enriched with IMDB ratings and scores.
+      Shows which Netflix movies are highly rated on IMDB and which have no IMDB presence.
+      Useful for answering: "What percentage of Netflix movies are rated on IMDB?",
+      "What is the average IMDB rating of Netflix movies?", or
+      "Which Netflix movies are in the IMDB top 1000?"
+    columns:
+      - name: title
+        description: Movie title
+        tests:
+          - not_null
+      - name: netflix_rating
+        description: Netflix content rating
+      - name: imdb_rating
+        description: IMDB rating (null if not in IMDB top 1000)
+      - name: imdb_tier
+        description: Quality tier based on IMDB rating (Excellent/Good/Average/Below Average/Not Rated)
+      - name: netflix_categories
+        description: Netflix categories
+      - name: country
+        description: Production country

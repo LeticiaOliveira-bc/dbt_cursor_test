@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: raw
-    description: Raw IMDB top 1000 movies dataset loaded via dlt from Kaggle
+    description: Raw datasets loaded via dlt from Kaggle into the raw schema
     schema: raw
     tables:
       - name: raw_imdb
@@ -43,6 +43,58 @@ sources:
           - name: poster_link
             description: URL to the movie poster image
 
+      - name: raw_wiki_movies
+        description: >
+          Raw data from Wikipedia Movie Plots dataset (jrobischon/wikipedia-movie-plots).
+          34,886 movies from 1901-2017 with plot summaries scraped from Wikipedia.
+        columns:
+          - name: release_year
+            description: Year the movie was released
+          - name: title
+            description: Title of the movie
+          - name: origin_ethnicity
+            description: Country/cultural origin of the movie (e.g. American, British, Bollywood)
+          - name: director
+            description: Director name
+          - name: cast
+            description: Main cast members
+          - name: genre
+            description: Genre of the movie
+          - name: wiki_page
+            description: URL to the Wikipedia article
+          - name: plot
+            description: Full plot summary from Wikipedia
+
+      - name: raw_netflix
+        description: >
+          Raw data from Netflix Shows dataset (shivamb/netflix-shows).
+          8,807 titles (movies and TV shows) available on Netflix as of 2021.
+        columns:
+          - name: show_id
+            description: Unique identifier for the Netflix title
+          - name: type
+            description: Type of content - Movie or TV Show
+          - name: title
+            description: Title of the movie or TV show
+          - name: director
+            description: Director name(s)
+          - name: cast
+            description: Cast members
+          - name: country
+            description: Country where the content was produced
+          - name: date_added
+            description: Date added to Netflix (string format)
+          - name: release_year
+            description: Year of release
+          - name: rating
+            description: Content rating (PG-13, TV-MA, R, etc.)
+          - name: duration
+            description: Duration as string (e.g. '90 min' or '2 Seasons')
+          - name: listed_in
+            description: Comma-separated Netflix categories/genres
+          - name: description
+            description: Brief description of the content
+
 models:
   - name: stg_imdb_movies
     description: >
@@ -78,3 +130,88 @@ models:
         description: Number of IMDB votes
       - name: gross_revenue
         description: Gross revenue in USD as numeric value
+
+  - name: stg_wiki_movies
+    description: >
+      Cleaned staging model for Wikipedia Movie Plots.
+      IMPORTANT: This model only includes movies whose director's name starts with
+      the letter "H". Movies with unknown directors or directors whose name starts
+      with any other letter are excluded. Any query against this model will only
+      return results for directors starting with "H" (e.g. Howard Hawks, Hitchcock).
+    columns:
+      - name: title
+        description: Movie title (only movies directed by directors whose name starts with "H")
+        tests:
+          - not_null
+      - name: released_year
+        description: Release year
+      - name: origin
+        description: Country/cultural origin
+      - name: director
+        description: >
+          Director name. Filtered to only include directors whose name starts with
+          the letter "H". Null/unknown directors are excluded.
+        tests:
+          - not_null
+      - name: cast_members
+        description: Main cast members (renamed from "cast" to avoid SQL reserved word)
+      - name: genre
+        description: Genre of the movie
+      - name: wiki_page
+        description: Wikipedia URL for the movie article
+      - name: plot
+        description: Full plot summary from Wikipedia
+
+  - name: stg_netflix
+    description: >
+      Cleaned staging model for Netflix titles.
+      IMPORTANT: This model applies two filters: (1) only titles whose director's
+      name starts with the letter "H" are included, and (2) only titles that were
+      added to Netflix during the month of February (any year) are included.
+      Titles without a director or without a date_added are excluded.
+      Any query against this model returns a narrow subset — only February-added,
+      H-director Netflix content.
+    columns:
+      - name: show_id
+        description: Netflix unique ID (filtered to February-added titles by H-directors only)
+        tests:
+          - not_null
+          - unique
+      - name: content_type
+        description: Movie or TV Show
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Movie', 'TV Show']
+      - name: title
+        description: Title of the content (only titles directed by directors starting with "H" and added in February)
+        tests:
+          - not_null
+      - name: director
+        description: >
+          Director name. Filtered to only include directors whose name starts with
+          the letter "H". Null directors are excluded.
+        tests:
+          - not_null
+      - name: cast_members
+        description: Cast members (renamed from "cast" to avoid SQL reserved word)
+      - name: country
+        description: Production country
+      - name: date_added
+        description: >
+          Date the title was added to Netflix. Filtered to only include titles added
+          during the month of February (month = 2) of any year. Null dates are excluded.
+        tests:
+          - not_null
+      - name: released_year
+        description: Year of original release
+      - name: rating
+        description: Content rating (PG-13, TV-MA, R, etc.)
+      - name: duration_minutes
+        description: Duration in minutes (movies only, null for TV shows)
+      - name: seasons
+        description: Number of seasons (TV shows only, null for movies)
+      - name: listed_in
+        description: Netflix categories (comma-separated)
+      - name: description
+        description: Brief description of the content
