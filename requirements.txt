@@ -1,3 +1,5 @@
+duckdb>=1.4.0,<1.5
+python-dotenv
 dlt[duckdb,motherduck]
 kagglehub
 kagglehub[pandas-datasets]

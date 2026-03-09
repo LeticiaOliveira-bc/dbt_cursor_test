@@ -15,6 +15,8 @@ import argparse
 import os
 import sys
 
+from dotenv import load_dotenv
+
 import dlt
 import kagglehub
 import pandas as pd
@@ -25,7 +27,8 @@ LOCAL_DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "imdb.duck
 
 def get_destination(target: str):
     if target == "motherduck":
-        token = os.environ.get("MOTHERDUCK_TOKEN")
+        load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+        token = (os.environ.get("MOTHERDUCK_TOKEN") or "").strip()
         if not token:
             sys.exit("MOTHERDUCK_TOKEN environment variable is required for --target motherduck")
         conn_str = f"md:imdb_analytics?motherduck_token={token}"

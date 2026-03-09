@@ -2,12 +2,29 @@
 
 Testing dbt's **Structured Context Layer** for conversational analytics via MCP in Cursor.
 
+## Setup
+
+Create and activate a virtualenv, then install dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Add a `.env` in the project root with your MotherDuck token (one line, no spaces around `=`):
+
+```
+MOTHERDUCK_TOKEN=your_token_here
+```
+
+Scripts and `run_with_env.py` load the token from `.env` so you don't need to export it.
+
 ## Use the existing MotherDuck database (quick)
 
 ```bash
-export MOTHERDUCK_TOKEN="your_token_here"
 python attach_shared_db.py
-dbt build --profiles-dir . --project-dir . --target motherduck
+python run_with_env.py dbt build --profiles-dir . --project-dir . --target motherduck
 ```
 
 Restart Cursor and start asking questions.
@@ -19,16 +36,13 @@ Restart Cursor and start asking questions.
 Requires Kaggle API credentials at `~/.kaggle/kaggle.json`.
 
 ```bash
-pip install -r requirements.txt
-
-# Load data
-export MOTHERDUCK_TOKEN="your_token_here"
+# Load data (token loaded from .env by each script)
 python pipelines/load_imdb.py --target motherduck
 python pipelines/load_wiki_movies.py --target motherduck
 python pipelines/load_netflix.py --target motherduck
 
 # Build models
-dbt build --profiles-dir . --project-dir . --target motherduck
+python run_with_env.py dbt build --profiles-dir . --project-dir . --target motherduck
 ```
 
 ---
