@@ -1,0 +1,80 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw IMDB top 1000 movies dataset loaded via dlt from Kaggle
+    schema: raw
+    tables:
+      - name: raw_imdb
+        description: >
+          Raw data from the IMDB Top 1000 movies dataset (debanganghosh/imdb-dataset).
+          Contains movie metadata including title, year, genre, ratings, cast, and revenue.
+        columns:
+          - name: series_title
+            description: Title of the movie
+          - name: released_year
+            description: Year the movie was released (stored as string, may contain non-numeric values)
+          - name: certificate
+            description: Age certification of the movie (e.g. UA, A, U, PG-13, R)
+          - name: runtime
+            description: Runtime of the movie as a string (e.g. '142 min')
+          - name: genre
+            description: Comma-separated list of genres
+          - name: imdb_rating
+            description: IMDB rating on a 1-10 scale
+          - name: overview
+            description: Brief plot summary
+          - name: meta_score
+            description: Metacritic score (0-100), may be null
+          - name: director
+            description: Name of the director
+          - name: star1
+            description: Lead actor/actress
+          - name: star2
+            description: Second billed actor/actress
+          - name: star3
+            description: Third billed actor/actress
+          - name: star4
+            description: Fourth billed actor/actress
+          - name: no_of_votes
+            description: Total number of IMDB votes
+          - name: gross
+            description: Gross revenue in USD as string with commas (e.g. '28,341,469')
+          - name: poster_link
+            description: URL to the movie poster image
+
+models:
+  - name: stg_imdb_movies
+    description: >
+      Cleaned and typed staging model for IMDB movies.
+      Parses runtime to integer minutes, cleans gross revenue to numeric,
+      and casts year to integer where possible.
+    columns:
+      - name: series_title
+        description: Title of the movie
+        tests:
+          - not_null
+      - name: released_year
+        description: Release year as integer (null if non-numeric in source)
+      - name: certificate
+        description: Age certification
+      - name: runtime_minutes
+        description: Runtime in minutes as integer
+      - name: genre
+        description: Comma-separated genre list
+      - name: imdb_rating
+        description: IMDB rating (1.0 - 10.0)
+        tests:
+          - not_null
+      - name: meta_score
+        description: Metacritic score (0-100)
+      - name: director
+        description: Director name
+        tests:
+          - not_null
+      - name: star1
+        description: Lead actor/actress
+      - name: no_of_votes
+        description: Number of IMDB votes
+      - name: gross_revenue
+        description: Gross revenue in USD as numeric value

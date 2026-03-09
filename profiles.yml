@@ -1,0 +1,11 @@
+imdb_duckdb:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: data/imdb.duckdb
+      threads: 4
+    motherduck:
+      type: duckdb
+      path: "md:imdb_analytics?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      threads: 4

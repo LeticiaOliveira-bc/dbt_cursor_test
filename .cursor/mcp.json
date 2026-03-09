@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "dbt": {
+      "command": "uvx",
+      "args": ["dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "/Users/lpoliveira/workspace/dbt_cursor_test",
+        "DBT_PATH": "/Users/lpoliveira/Library/Python/3.9/bin/dbt"
+      }
+    },
+    "mcp-server-motherduck": {
+      "command": "uvx",
+      "args": [
+        "--env-file",
+        "/Users/lpoliveira/workspace/dbt_cursor_test/.env",
+        "mcp-server-motherduck",
+        "--db-path",
+        "md:imdb_analytics"
+      ]
+    }
+  }
+}

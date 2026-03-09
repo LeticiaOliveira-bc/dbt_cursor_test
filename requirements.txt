@@ -1,0 +1,6 @@
+dlt[duckdb,motherduck]
+kagglehub
+kagglehub[pandas-datasets]
+dbt-core
+dbt-duckdb
+pandas

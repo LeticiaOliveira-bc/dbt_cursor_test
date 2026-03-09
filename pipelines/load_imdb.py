@@ -1,0 +1,89 @@
+"""
+dlt pipeline: Download IMDB dataset from Kaggle via kagglehub and load into DuckDB.
+
+Supports two destinations:
+  --target local       -> data/imdb.duckdb (default)
+  --target motherduck  -> md:imdb (requires MOTHERDUCK_TOKEN env var)
+
+Prerequisites:
+  - Kaggle API credentials at ~/.kaggle/kaggle.json
+  - pip install -r requirements.txt
+  - For MotherDuck: export MOTHERDUCK_TOKEN="your_token"
+"""
+
+import argparse
+import os
+import sys
+
+import dlt
+import kagglehub
+from kagglehub import KaggleDatasetAdapter
+
+DATASET_HANDLE = "debanganghosh/imdb-dataset"
+LOCAL_DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "imdb.duckdb")
+
+
+def get_destination(target: str):
+    if target == "motherduck":
+        token = os.environ.get("MOTHERDUCK_TOKEN")
+        if not token:
+            sys.exit("MOTHERDUCK_TOKEN environment variable is required for --target motherduck")
+        conn_str = f"md:imdb_analytics?motherduck_token={token}"
+        return dlt.destinations.motherduck(conn_str), "md:imdb_analytics"
+
+    db_abs = os.path.abspath(LOCAL_DB_PATH)
+    os.makedirs(os.path.dirname(db_abs), exist_ok=True)
+    return dlt.destinations.duckdb(db_abs), db_abs
+
+
+def discover_file_path() -> str:
+    """Download dataset and return the name of the first CSV found."""
+    cache_path = kagglehub.dataset_download(DATASET_HANDLE)
+    csv_files = [f for f in os.listdir(cache_path) if f.endswith(".csv")]
+    if not csv_files:
+        sys.exit(f"No CSV files found in dataset at {cache_path}")
+    chosen = csv_files[0]
+    print(f"Using file: {chosen}  (from {cache_path})")
+    return chosen
+
+
+def load_imdb(target: str):
+    file_path = discover_file_path()
+
+    print(f"Loading dataset '{DATASET_HANDLE}' file '{file_path}' into pandas...")
+    df = kagglehub.load_dataset(
+        KaggleDatasetAdapter.PANDAS,
+        DATASET_HANDLE,
+        file_path,
+    )
+    print(f"Loaded {len(df)} rows, {len(df.columns)} columns")
+    print(f"Columns: {list(df.columns)}")
+    print(df.head())
+
+    destination, dest_label = get_destination(target)
+
+    pipeline = dlt.pipeline(
+        pipeline_name="imdb_pipeline",
+        destination=destination,
+        dataset_name="raw",
+    )
+
+    load_info = pipeline.run(
+        df.to_dict(orient="records"),
+        table_name="raw_imdb",
+        write_disposition="replace",
+    )
+    print(load_info)
+    print(f"Data loaded into {dest_label}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Load IMDB dataset into DuckDB")
+    parser.add_argument(
+        "--target",
+        choices=["local", "motherduck"],
+        default="local",
+        help="Destination: 'local' for file-based DuckDB, 'motherduck' for cloud (default: local)",
+    )
+    args = parser.parse_args()
+    load_imdb(args.target)

@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: movies_by_genre
+    description: >
+      Aggregated movie statistics by genre. Each genre from the comma-separated
+      genre field is unnested so a movie can appear in multiple genre rows.
+      Useful for answering: "Which genre has the highest average rating?"
+      or "How many movies are in each genre?"
+    columns:
+      - name: genre
+        description: Individual genre (unnested from comma-separated list)
+        tests:
+          - not_null
+      - name: movie_count
+        description: Number of movies in this genre
+      - name: avg_imdb_rating
+        description: Average IMDB rating for movies in this genre
+      - name: avg_meta_score
+        description: Average Metacritic score (excludes nulls)
+      - name: total_gross_revenue
+        description: Sum of gross revenue for movies in this genre
+      - name: avg_runtime_minutes
+        description: Average runtime in minutes
+
+  - name: movies_by_year
+    description: >
+      Aggregated movie statistics by release year.
+      Useful for answering: "How many top movies came out each decade?"
+      or "What year had the highest-rated movies?"
+    columns:
+      - name: released_year
+        description: Year the movie was released
+        tests:
+          - not_null
+      - name: movie_count
+        description: Number of movies released that year
+      - name: avg_imdb_rating
+        description: Average IMDB rating for that year
+      - name: avg_meta_score
+        description: Average Metacritic score for that year
+      - name: total_gross_revenue
+        description: Total gross revenue for movies that year
+      - name: top_movie
+        description: Highest-rated movie of that year
+
+  - name: top_directors
+    description: >
+      Director-level aggregations ranking directors by number of movies
+      in the IMDB top 1000, average rating, and total revenue.
+      Useful for answering: "Who are the most represented directors?"
+      or "Which director has the highest average rating?"
+    columns:
+      - name: director
+        description: Director name
+        tests:
+          - not_null
+          - unique
+      - name: movie_count
+        description: Number of movies by this director in the top 1000
+      - name: avg_imdb_rating
+        description: Average IMDB rating across their movies
+      - name: avg_meta_score
+        description: Average Metacritic score across their movies
+      - name: total_gross_revenue
+        description: Sum of gross revenue across their movies
+      - name: best_movie
+        description: Their highest-rated movie title

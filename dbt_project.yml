@@ -1,0 +1,25 @@
+name: imdb_analytics
+version: '1.0.0'
+
+profile: imdb_duckdb
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+docs-paths: ["docs"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  imdb_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: view
+      +schema: marts

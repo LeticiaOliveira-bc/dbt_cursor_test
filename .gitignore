@@ -1,0 +1,26 @@
+# DuckDB database
+data/*.duckdb
+data/*.duckdb.wal
+
+# dlt pipeline state
+pipelines/.dlt/
+*.pipeline/
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+env
+
+# OS
+.DS_Store
+
+# Kaggle credentials (never commit)
+kaggle.json
