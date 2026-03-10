@@ -17,6 +17,10 @@ clean-targets:
 
 models:
   imdb_analytics:
+    # Push model/column descriptions from schema.yml to DB as COMMENT ON TABLE/COLUMN (DuckDB/MotherDuck).
+    +persist_docs:
+      relation: true
+      columns: true
     staging:
       +materialized: view
       +schema: staging
