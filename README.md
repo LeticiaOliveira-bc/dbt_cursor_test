@@ -23,7 +23,7 @@ You can explore and query the data on MotherDuck from Cursor **without cloning t
 }
 ```
 
-- Click **Connect**. A browser popup will open—sign in with your MotherDuck account. When it’s done, you’re connected.
+- save and click **Connect**. A browser popup will open—sign in with your MotherDuck account. When it’s done, you’re connected.
 
 ### 2. Project rule so the AI uses table and column comments
 
