@@ -33,6 +33,20 @@ So that when you ask questions about the data, the AI reads the business rules s
 
 - **`.cursor/rules/motherduck-comments.mdc`** — tells the AI to read table/view and column comments before writing or interpreting MotherDuck queries and to surface important constraints to you.
 
+**Rule text**:
+
+```
+When querying MotherDuck (list_databases, list_tables, list_columns, query):
+
+1. **Before writing a query**: Call list_tables for the database(s) you need and read every **table/view comment**. Treat comments as the source of truth for business rules (filtering, exclusions, data quality rules).
+
+2. **Before interpreting results**: If the query touches staging or domain tables, call list_columns for those objects and read **column comments** for nullability, semantics, or rules that affect interpretation.
+
+3. **Surface rules to the user**: If a comment describes an important constraint (e.g. "only includes directors starting with H", "director set to null when..."), mention it when you answer so the user knows the scope and limitations of the data.
+
+**Example:** stg_wiki_movies might say it only includes movies whose director's name starts with "H"—so any analysis of "Wikipedia plot coverage" from that table is limited to those directors unless stated otherwise. stg_netflix might say director is null when the name starts with "H"; then downstream joins on director will miss those rows—say so when reporting director-based stats.
+```
+
 You don’t need to do anything else: open this project in Cursor and the rule is active. If you clone the repo elsewhere, the rule travels with it.
 
 **If you need to add or change rules:** create or edit `.mdc` files under `.cursor/rules/`. Example structure:
