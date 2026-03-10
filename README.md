@@ -12,8 +12,18 @@ You can explore and query the data on MotherDuck from Cursor **without cloning t
 
 - Open **Cursor → Settings** (or **File → Preferences → Settings** on Windows/Linux).
 - In the left sidebar, click **MCP**.
-- Add the **MotherDuck** server if it’s not there, then click **Connect**.
-- A browser popup will open—sign in with your MotherDuck account. When it’s done, you’re connected.
+- Click **New MCP server** and add the MotherDuck connector with:
+
+```json
+"mcpServers": {
+  "MotherDuck": {
+    "url": "https://api.motherduck.com/mcp",
+    "type": "http"
+  }
+}
+```
+
+- Click **Connect**. A browser popup will open—sign in with your MotherDuck account. When it’s done, you’re connected.
 
 ### 2. Project rule so the AI uses table and column comments
 
