@@ -77,7 +77,9 @@ sources:
           - name: title
             description: Title of the movie or TV show
           - name: director
-            description: Director name(s)
+            description: >
+              Director name(s). Note: in staging (stg_netflix), director is set to null
+              when the name starts with the letter "H".
           - name: cast
             description: Cast members
           - name: country
@@ -165,7 +167,8 @@ models:
   - name: stg_netflix
     description: >
       Cleaned staging model for Netflix titles. All source rows are included.
-      Director is set to null when the director's name starts with the letter "H".
+      Important: director is set to null when the director's name starts with the
+      letter "H" (so downstream models will not see those directors).
     columns:
       - name: show_id
         description: Netflix unique ID

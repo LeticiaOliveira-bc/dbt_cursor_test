@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "MotherDuck": {
+      "url": "https://api.motherduck.com/mcp",
+      "type": "http"
+    },
     "dbt": {
       "command": "uvx",
       "args": ["dbt-mcp"],
@@ -12,7 +16,7 @@
       "command": "uvx",
       "args": [
         "--env-file",
-        "/Users/lpoliveira/workspace/dbt_cursor_test/.env",
+        "./dbt_cursor_test/.env",
         "mcp-server-motherduck",
         "--db-path",
         "md:imdb_analytics"
