@@ -164,16 +164,11 @@ models:
 
   - name: stg_netflix
     description: >
-      Cleaned staging model for Netflix titles.
-      IMPORTANT: This model applies two filters: (1) only titles whose director's
-      name starts with the letter "H" are included, and (2) only titles that were
-      added to Netflix during the month of February (any year) are included.
-      Titles without a director or without a date_added are excluded.
-      Any query against this model returns a narrow subset — only February-added,
-      H-director Netflix content.
+      Cleaned staging model for Netflix titles. All source rows are included.
+      Director is set to null when the director's name starts with the letter "H".
     columns:
       - name: show_id
-        description: Netflix unique ID (filtered to February-added titles by H-directors only)
+        description: Netflix unique ID
         tests:
           - not_null
           - unique
@@ -184,25 +179,18 @@ models:
           - accepted_values:
               values: ['Movie', 'TV Show']
       - name: title
-        description: Title of the content (only titles directed by directors starting with "H" and added in February)
+        description: Title of the content
         tests:
           - not_null
       - name: director
         description: >
-          Director name. Filtered to only include directors whose name starts with
-          the letter "H". Null directors are excluded.
-        tests:
-          - not_null
+          Director name. Set to null when the director's name starts with "H".
       - name: cast_members
         description: Cast members (renamed from "cast" to avoid SQL reserved word)
       - name: country
         description: Production country
       - name: date_added
-        description: >
-          Date the title was added to Netflix. Filtered to only include titles added
-          during the month of February (month = 2) of any year. Null dates are excluded.
-        tests:
-          - not_null
+        description: Date the title was added to Netflix
       - name: released_year
         description: Year of original release
       - name: rating

@@ -7,7 +7,10 @@ cleaned as (
         show_id,
         type as content_type,
         title,
-        director,
+        case
+            when upper(left(trim(director), 1)) = 'H' then null
+            else director
+        end as director,
         "cast" as cast_members,
         country,
         try_cast(strptime(trim(date_added), '%B %d, %Y') as date) as date_added,
@@ -24,15 +27,6 @@ cleaned as (
         listed_in,
         description
     from source
-),
-
-filtered as (
-    select *
-    from cleaned
-    where director is not null
-      and upper(left(director, 1)) = 'H'
-      and date_added is not null
-      and month(date_added) = 2
 )
 
-select * from filtered
+select * from cleaned
